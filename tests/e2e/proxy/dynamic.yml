@@ -1,0 +1,14 @@
+# The route of the deployment: everything below /paperclip reaches the image
+# with the path unchanged, without StripPrefix and without a redirect of the
+# proxy; nothing else is routed.
+http:
+  routers:
+    paperclip:
+      rule: "PathPrefix(`/paperclip`)"
+      entryPoints: [web]
+      service: paperclip
+  services:
+    paperclip:
+      loadBalancer:
+        servers:
+          - url: "http://paperclip:3100"

@@ -1,0 +1,27 @@
+# Builds the images of this repository and publishes them on Docker Hub, on
+# every push to the default branch, and in the hourly check when a parent
+# image or a download changed or the image is a week old. The build itself is
+# the reusable workflow docker-image.yml of mwaeckerlin/scratch; its README
+# explains the setup.
+
+name: docker
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+concurrency: docker-${{ github.ref_name }}
+
+jobs:
+  docker:
+    uses: mwaeckerlin/scratch/.github/workflows/docker-image.yml@master
+    permissions:
+      actions: write
+      contents: read
+    with:
+      architectures: '["amd64","arm64"]'
+      free-disk: true
+    secrets: inherit

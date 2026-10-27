@@ -1,0 +1,26 @@
+services:
+  paperclip:
+    image: mwaeckerlin/paperclip
+    build: .
+    ports:
+      - ${PAPERCLIP_BIND_ADDRESS:-127.0.0.1}:3100:3100
+    environment:
+      # optional: serve below a path of a shared address; unset serves at the root
+      PAPERCLIP_BASE_PATH: ${PAPERCLIP_BASE_PATH:-}
+      PAPERCLIP_PUBLIC_URL: ${PAPERCLIP_PUBLIC_URL:-http://localhost:3100}
+      BETTER_AUTH_SECRET_FILE: /run/secrets/paperclip_better_auth_secret
+    secrets:
+      - paperclip_better_auth_secret
+    volumes:
+      - data:/paperclip
+    # upstream's ceiling on the processes of the agents, and the time they
+    # need to settle when the container stops
+    pids_limit: 2048
+    stop_grace_period: 90s
+
+secrets:
+  paperclip_better_auth_secret:
+    environment: PAPERCLIP_BETTER_AUTH_SECRET
+
+volumes:
+  data:

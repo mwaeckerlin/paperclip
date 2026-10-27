@@ -1,0 +1,64 @@
+# End-to-end stack of tests/run-e2e.sh. The network is internal: Paperclip
+# reaches nothing outside the stack. The secret is a test value of this stack
+# only.
+name: paperclip-e2e
+
+services:
+  # below the base path /paperclip, the way the deployment runs it
+  paperclip:
+    image: mwaeckerlin/paperclip
+    environment:
+      PAPERCLIP_BASE_PATH: /paperclip
+      PAPERCLIP_PUBLIC_URL: http://proxy:8080/paperclip
+      BETTER_AUTH_SECRET_FILE: /run/secrets/better_auth_secret
+    secrets:
+      - better_auth_secret
+    volumes:
+      - data:/paperclip
+    pids_limit: 2048
+    stop_grace_period: 90s
+    networks:
+      - e2e
+
+  # the same image without a base path, at the root as upstream serves it
+  paperclip-root:
+    image: mwaeckerlin/paperclip
+    environment:
+      PAPERCLIP_PUBLIC_URL: http://paperclip-root:3100
+      BETTER_AUTH_SECRET_FILE: /run/secrets/better_auth_secret
+    secrets:
+      - better_auth_secret
+    pids_limit: 2048
+    stop_grace_period: 90s
+    networks:
+      - e2e
+
+  # Traefik with the route of the deployment: PathPrefix(`/paperclip`), no StripPrefix
+  proxy:
+    build: proxy
+    image: mwaeckerlin/paperclip-e2e-proxy
+    user: "65534:65534"
+    networks:
+      - e2e
+
+  # Chromium through the proxy below /paperclip, and at the root without a base path
+  browser:
+    build: browser
+    image: mwaeckerlin/paperclip-e2e-browser
+    environment:
+      PROXY_URL: http://proxy:8080
+      PREFIX: /paperclip
+      ROOT_URL: http://paperclip-root:3100
+    networks:
+      - e2e
+
+secrets:
+  better_auth_secret:
+    environment: PAPERCLIP_E2E_BETTER_AUTH_SECRET
+
+volumes:
+  data:
+
+networks:
+  e2e:
+    internal: true

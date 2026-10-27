@@ -1,0 +1,15 @@
+.gitignore
+.git
+.github
+.env*
+README.md
+CHANGELOG.md
+FEATURES.md
+TESTS.md
+TODO.md
+LICENSE
+tests
+bin/fixtures
+**/*.test.mjs
+node_modules
+*~

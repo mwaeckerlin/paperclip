@@ -1,0 +1,18 @@
+{
+  "name": "@mwaeckerlin/paperclip",
+  "version": "1.0.0",
+  "description": "Paperclip as a secure headless multi-arch Docker image with an optional base path",
+  "scripts": {
+    "build": "docker compose build",
+    "start": "docker compose up --build --force-recreate --remove-orphans",
+    "start:daemon": "docker compose up -d --build --force-recreate --remove-orphans",
+    "start:dev": "docker compose up --build --force-recreate --remove-orphans",
+    "stop": "docker compose down",
+    "deploy": "docker compose push",
+    "test": "npm run test:docs && npm run test:unit && npm run test:image && npm run test:e2e",
+    "test:docs": "bash tests/docs-contract.sh",
+    "test:unit": "node --test app/configuration.test.mjs app/serve.test.mjs bin/patch-upstream.test.mjs",
+    "test:image": "npm run build && bash tests/image-contract.sh mwaeckerlin/paperclip",
+    "test:e2e": "bash tests/run-e2e.sh"
+  }
+}
