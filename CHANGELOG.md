@@ -1,5 +1,8 @@
 # Changelog
 
+- 2026-10-27 **1.0.1**
+    - The test of the websocket upgrade reads a chunked answer as well, which Paperclip sends on arm64, so the image is published for both architectures
+
 - 2026-10-27 **1.0.0**
     - Paperclip, the work manager for AI agents, from the upstream image, at the root or below a path of its own such as `/paperclip`
     - Below a path, the page, its assets, every API call, the websockets, the server-sent events and the redirects stay below it, behind a reverse proxy that forwards the path unchanged

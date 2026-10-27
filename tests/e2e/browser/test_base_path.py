@@ -141,6 +141,16 @@ def test_websocket_upgrade_reaches_paperclip_only_below_the_base_path():
                            if line.lower().startswith(b"content-length:")), None)
             while length is not None and len(body) < length and (chunk := connection.recv(4096)):
                 body += chunk
+            # the same answer comes chunked on arm64 (measured in the runner on 2026-10-27)
+            if b"transfer-encoding: chunked" in head.lower():
+                while not body.endswith(b"0\r\n\r\n") and (chunk := connection.recv(4096)):
+                    body += chunk
+                decoded = b""
+                while (size := int(body.split(b"\r\n", 1)[0], 16)):
+                    data = body.split(b"\r\n", 1)[1]
+                    decoded += data[:size]
+                    body = data[size + 2:]
+                body = decoded
         return (head + b"\r\n\r\n" + body).decode(errors="replace")
 
     # Paperclip refuses the live events of a company without a session

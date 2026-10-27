@@ -1,6 +1,6 @@
 {
   "name": "@mwaeckerlin/paperclip",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Paperclip as a secure headless multi-arch Docker image with an optional base path",
   "scripts": {
     "build": "docker compose build",
